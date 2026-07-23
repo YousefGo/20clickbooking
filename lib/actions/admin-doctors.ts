@@ -1,10 +1,12 @@
 "use server";
 
 import { z } from "zod";
+import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { doctorAvailability, doctorExceptions, doctors } from "@/lib/db/schema";
+import { getDoctorById } from "@/lib/db/queries/doctors";
 
 const doctorSchema = z.object({
   departmentId: z.string().uuid(),
@@ -16,6 +18,8 @@ const doctorSchema = z.object({
   bioAr: z.string().trim().max(1000).optional().or(z.literal("")),
   slotDurationMinutes: z.coerce.number().int().min(5).max(240),
   isActive: z.boolean(),
+  email: z.string().trim().toLowerCase().email().optional().or(z.literal("")),
+  password: z.string().min(8).max(72).optional().or(z.literal("")),
 });
 
 export type DoctorActionResult = { ok: true; id?: string } | { ok: false; error: string };
@@ -31,6 +35,8 @@ function parseDoctorForm(formData: FormData) {
     bioAr: formData.get("bioAr"),
     slotDurationMinutes: formData.get("slotDurationMinutes"),
     isActive: formData.get("isActive") === "on",
+    email: formData.get("email"),
+    password: formData.get("password"),
   });
 }
 
@@ -38,44 +44,74 @@ export async function createDoctor(formData: FormData): Promise<DoctorActionResu
   const parsed = parseDoctorForm(formData);
   if (!parsed.success) return { ok: false, error: "validation" };
 
-  const [row] = await db
-    .insert(doctors)
-    .values({
-      departmentId: parsed.data.departmentId,
-      nameEn: parsed.data.nameEn,
-      nameAr: parsed.data.nameAr,
-      titleEn: parsed.data.titleEn || null,
-      titleAr: parsed.data.titleAr || null,
-      bioEn: parsed.data.bioEn || null,
-      bioAr: parsed.data.bioAr || null,
-      slotDurationMinutes: parsed.data.slotDurationMinutes,
-      isActive: parsed.data.isActive,
-    })
-    .returning({ id: doctors.id });
+  const email = parsed.data.email || "";
+  const password = parsed.data.password || "";
+  if (Boolean(email) !== Boolean(password)) {
+    return { ok: false, error: "portal_credentials_incomplete" };
+  }
 
-  revalidatePath("/[locale]/admin/doctors", "page");
-  return { ok: true, id: row.id };
+  try {
+    const [row] = await db
+      .insert(doctors)
+      .values({
+        departmentId: parsed.data.departmentId,
+        nameEn: parsed.data.nameEn,
+        nameAr: parsed.data.nameAr,
+        titleEn: parsed.data.titleEn || null,
+        titleAr: parsed.data.titleAr || null,
+        bioEn: parsed.data.bioEn || null,
+        bioAr: parsed.data.bioAr || null,
+        slotDurationMinutes: parsed.data.slotDurationMinutes,
+        isActive: parsed.data.isActive,
+        email: email || null,
+        passwordHash: password ? await hash(password, 10) : null,
+      })
+      .returning({ id: doctors.id });
+
+    revalidatePath("/[locale]/admin/doctors", "page");
+    return { ok: true, id: row.id };
+  } catch (error) {
+    if (isUniqueViolation(error)) return { ok: false, error: "email_taken" };
+    throw error;
+  }
 }
 
 export async function updateDoctor(id: string, formData: FormData): Promise<DoctorActionResult> {
   const parsed = parseDoctorForm(formData);
   if (!parsed.success) return { ok: false, error: "validation" };
 
-  await db
-    .update(doctors)
-    .set({
-      departmentId: parsed.data.departmentId,
-      nameEn: parsed.data.nameEn,
-      nameAr: parsed.data.nameAr,
-      titleEn: parsed.data.titleEn || null,
-      titleAr: parsed.data.titleAr || null,
-      bioEn: parsed.data.bioEn || null,
-      bioAr: parsed.data.bioAr || null,
-      slotDurationMinutes: parsed.data.slotDurationMinutes,
-      isActive: parsed.data.isActive,
-      updatedAt: new Date(),
-    })
-    .where(eq(doctors.id, id));
+  const existing = await getDoctorById(id);
+  if (!existing) return { ok: false, error: "not_found" };
+
+  const email = parsed.data.email || "";
+  const password = parsed.data.password || "";
+  const hasExistingPassword = Boolean(existing.passwordHash);
+  if (email && !password && !hasExistingPassword) {
+    return { ok: false, error: "portal_credentials_incomplete" };
+  }
+
+  try {
+    await db
+      .update(doctors)
+      .set({
+        departmentId: parsed.data.departmentId,
+        nameEn: parsed.data.nameEn,
+        nameAr: parsed.data.nameAr,
+        titleEn: parsed.data.titleEn || null,
+        titleAr: parsed.data.titleAr || null,
+        bioEn: parsed.data.bioEn || null,
+        bioAr: parsed.data.bioAr || null,
+        slotDurationMinutes: parsed.data.slotDurationMinutes,
+        isActive: parsed.data.isActive,
+        email: email || null,
+        passwordHash: !email ? null : password ? await hash(password, 10) : existing.passwordHash,
+        updatedAt: new Date(),
+      })
+      .where(eq(doctors.id, id));
+  } catch (error) {
+    if (isUniqueViolation(error)) return { ok: false, error: "email_taken" };
+    throw error;
+  }
 
   revalidatePath("/[locale]/admin/doctors", "page");
   revalidatePath("/[locale]/admin/doctors/[id]", "page");
@@ -153,8 +189,20 @@ export async function removeException(id: string): Promise<void> {
   revalidatePath("/[locale]/admin/doctors/[id]", "page");
 }
 
+/** Postgres error code for a thrown value, unwrapping Drizzle's DrizzleQueryError which nests the driver error in `.cause`. */
+function pgErrorCode(error: unknown): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+  if ("code" in error && typeof (error as { code?: unknown }).code === "string") {
+    return (error as { code: string }).code;
+  }
+  if ("cause" in error) return pgErrorCode((error as { cause?: unknown }).cause);
+  return undefined;
+}
+
 function isForeignKeyViolation(error: unknown): boolean {
-  return Boolean(
-    error && typeof error === "object" && "code" in error && (error as { code?: string }).code === "23503",
-  );
+  return pgErrorCode(error) === "23503";
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  return pgErrorCode(error) === "23505";
 }

@@ -72,10 +72,53 @@
       "tooManyAttempts": "محاولات كثيرة جداً. يرجى المحاولة بعد بضع دقائق."
     },
     "nav": {
+      "dashboard": "الرئيسية",
       "requests": "الطلبات المعلّقة",
       "appointments": "المواعيد",
+      "calendar": "التقويم",
+      "archive": "الأرشيف",
       "departments": "الأقسام",
       "doctors": "الأطباء"
+    },
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "subtitle": "نظرة عامة على أداء الحجوزات في {hospital}",
+      "statPending": "طلبات معلّقة",
+      "statToday": "مواعيد اليوم",
+      "statWeek": "مواعيد هذا الأسبوع",
+      "statConfirmedTotal": "إجمالي المؤكدة",
+      "statRejectedCancelled": "مرفوضة وملغاة",
+      "viewAll": "عرض الكل",
+      "byDepartment": "الحجوزات حسب القسم",
+      "byDepartmentEmpty": "لا توجد بيانات كافية بعد.",
+      "trendTitle": "الحجوزات الجديدة — آخر 14 يوماً",
+      "pendingPreviewTitle": "أحدث الطلبات المعلّقة",
+      "pendingPreviewEmpty": "لا توجد طلبات معلّقة حالياً.",
+      "search": {
+        "title": "البحث عن موعد",
+        "subtitle": "ابحث بالرقم المرجعي للموعد أو رقم جوال المريض.",
+        "placeholder": "مثال: A1B2C3D4 أو 0501234567",
+        "button": "بحث",
+        "resultsCount": "{count} نتيجة",
+        "noResults": "لا توجد نتائج مطابقة لهذا البحث.",
+        "reference": "الرقم المرجعي"
+      }
+    },
+    "calendar": {
+      "title": "تقويم المواعيد",
+      "selectDay": "اختر يوماً من التقويم لعرض مواعيده."
+    },
+    "archive": {
+      "title": "أرشيف المواعيد",
+      "subtitle": "{count} موعد مطابق للبحث الحالي.",
+      "exportExcel": "تصدير إلى إكسل",
+      "filterByStatus": "تصفية حسب الحالة",
+      "allStatuses": "كل الحالات",
+      "from": "من تاريخ",
+      "to": "إلى تاريخ",
+      "searchLabel": "بحث",
+      "searchPlaceholder": "الاسم، الجوال، البريد، أو الرقم المرجعي",
+      "empty": "لا توجد مواعيد مطابقة."
     },
     "requests": {
       "title": "الطلبات المعلّقة",
@@ -139,6 +182,13 @@
       "updateSuccess": "تم تحديث الطبيب.",
       "deleteSuccess": "تم حذف الطبيب.",
       "deleteConfirm": "حذف هذا الطبيب وكل بيانات جدوله؟",
+      "portalAccess": "الدخول إلى منصة الطبيب",
+      "portalAccessHint": "حدّد بريداً وكلمة مرور ليتمكّن الطبيب من تسجيل الدخول ومتابعة مواعيده. اتركهما فارغين لعدم إتاحة الدخول.",
+      "portalEmail": "البريد الإلكتروني للطبيب",
+      "portalPassword": "كلمة المرور",
+      "portalPasswordEdit": "كلمة مرور جديدة (اتركها فارغة للإبقاء على الحالية)",
+      "emailTaken": "هذا البريد الإلكتروني مستخدم بالفعل لطبيب آخر.",
+      "portalCredentialsIncomplete": "يجب تحديد البريد الإلكتروني وكلمة المرور معاً لتفعيل الدخول.",
       "availability": "الجدول الأسبوعي",
       "addAvailability": "إضافة فترة زمنية",
       "dayOfWeek": "اليوم",
@@ -158,6 +208,21 @@
         "5": "الجمعة",
         "6": "السبت"
       }
+    }
+  },
+  "doctor": {
+    "login": {
+      "title": "دخول الطبيب",
+      "subtitle": "أدخل بريدك الإلكتروني وكلمة المرور للمتابعة.",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      "tooManyAttempts": "محاولات كثيرة جداً. يرجى المحاولة بعد بضع دقائق."
+    },
+    "dashboard": {
+      "title": "مواعيدي",
+      "greeting": "مرحباً بك"
     }
   },
   "status": {

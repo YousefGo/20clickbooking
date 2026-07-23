@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, CalendarDays, Building2, Users } from "lucide-react";
+import { LayoutDashboard, ClipboardList, CalendarDays, CalendarRange, Building2, Users, Archive } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import type { Locale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
@@ -11,8 +11,11 @@ export function AdminNav({ locale, dict }: { locale: Locale; dict: Dictionary })
   const pathname = usePathname();
 
   const items = [
-    { href: `/${locale}/admin`, label: dict.admin.nav.requests, icon: ClipboardList, exact: true },
+    { href: `/${locale}/admin`, label: dict.admin.nav.dashboard, icon: LayoutDashboard, exact: true },
+    { href: `/${locale}/admin/requests`, label: dict.admin.nav.requests, icon: ClipboardList },
     { href: `/${locale}/admin/appointments`, label: dict.admin.nav.appointments, icon: CalendarDays },
+    { href: `/${locale}/admin/calendar`, label: dict.admin.nav.calendar, icon: CalendarRange },
+    { href: `/${locale}/admin/archive`, label: dict.admin.nav.archive, icon: Archive },
     { href: `/${locale}/admin/departments`, label: dict.admin.nav.departments, icon: Building2 },
     { href: `/${locale}/admin/doctors`, label: dict.admin.nav.doctors, icon: Users },
   ];

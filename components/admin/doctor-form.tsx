@@ -25,6 +25,7 @@ export interface DoctorFormValues {
   bioAr: string | null;
   slotDurationMinutes: number;
   isActive: boolean;
+  email: string | null;
 }
 
 export function DoctorForm({
@@ -49,7 +50,9 @@ export function DoctorForm({
     startTransition(async () => {
       const result = initial?.id ? await updateDoctor(initial.id, formData) : await createDoctor(formData);
       if (!result.ok) {
-        setError(dict.common.error);
+        if (result.error === "email_taken") setError(dict.admin.doctors.emailTaken);
+        else if (result.error === "portal_credentials_incomplete") setError(dict.admin.doctors.portalCredentialsIncomplete);
+        else setError(dict.common.error);
         return;
       }
       toast.success(initial?.id ? dict.admin.doctors.updateSuccess : dict.admin.doctors.createSuccess);
@@ -115,6 +118,22 @@ export function DoctorForm({
         <span>{dict.common.active}</span>
       </label>
 
+      <div className="flex flex-col gap-4 rounded-xl border border-border p-4">
+        <div>
+          <p className="font-heading text-sm font-bold text-navy">{dict.admin.doctors.portalAccess}</p>
+          <p className="text-xs text-muted-foreground">{dict.admin.doctors.portalAccessHint}</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label={dict.admin.doctors.portalEmail} name="email" defaultValue={initial?.email ?? ""} dir="ltr" type="email" />
+          <Field
+            label={initial?.id ? dict.admin.doctors.portalPasswordEdit : dict.admin.doctors.portalPassword}
+            name="password"
+            dir="ltr"
+            type="password"
+          />
+        </div>
+      </div>
+
       {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
 
       <Button type="submit" disabled={isPending} className="self-start">
@@ -130,16 +149,18 @@ function Field({
   name,
   defaultValue,
   dir,
+  type,
 }: {
   label: string;
   name: string;
   defaultValue?: string;
   dir?: "ltr" | "rtl";
+  type?: string;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={name}>{label}</Label>
-      <Input id={name} name={name} defaultValue={defaultValue} dir={dir} />
+      <Input id={name} name={name} type={type} defaultValue={defaultValue} dir={dir} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/auth/admin-session";
+import { DOCTOR_SESSION_COOKIE, verifyDoctorSessionToken } from "@/lib/auth/doctor-session";
 import { defaultLocale, isLocale, locales } from "@/lib/i18n/config";
 
 function detectPreferredLocale(request: NextRequest): string {
@@ -32,15 +33,30 @@ export async function proxy(request: NextRequest) {
   }
 
   const isAdminRoute = pathname.startsWith(`/${pathnameLocale}/admin`);
-  const isLoginRoute = pathname.startsWith(`/${pathnameLocale}/admin/login`);
+  const isAdminLoginRoute = pathname.startsWith(`/${pathnameLocale}/admin/login`);
 
-  if (isAdminRoute && !isLoginRoute) {
+  if (isAdminRoute && !isAdminLoginRoute) {
     const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
     const isValid = token ? await verifyAdminSessionToken(token) : false;
 
     if (!isValid) {
       const url = request.nextUrl.clone();
       url.pathname = `/${pathnameLocale}/admin/login`;
+      url.searchParams.set("from", pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
+  const isDoctorRoute = pathname.startsWith(`/${pathnameLocale}/doctor`);
+  const isDoctorLoginRoute = pathname.startsWith(`/${pathnameLocale}/doctor/login`);
+
+  if (isDoctorRoute && !isDoctorLoginRoute) {
+    const token = request.cookies.get(DOCTOR_SESSION_COOKIE)?.value;
+    const doctorId = token ? await verifyDoctorSessionToken(token) : null;
+
+    if (!doctorId) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${pathnameLocale}/doctor/login`;
       url.searchParams.set("from", pathname);
       return NextResponse.redirect(url);
     }

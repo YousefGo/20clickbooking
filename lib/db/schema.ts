@@ -51,10 +51,15 @@ export const doctors = pgTable(
     photoUrl: text("photo_url"),
     slotDurationMinutes: integer("slot_duration_minutes").notNull().default(30),
     isActive: boolean("is_active").notNull().default(true),
+    email: text("email"),
+    passwordHash: text("password_hash"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index("doctors_department_id_idx").on(table.departmentId)],
+  (table) => [
+    index("doctors_department_id_idx").on(table.departmentId),
+    uniqueIndex("doctors_email_uq").on(table.email),
+  ],
 );
 
 export const doctorAvailability = pgTable(

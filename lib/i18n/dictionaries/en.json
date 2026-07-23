@@ -72,10 +72,53 @@
       "tooManyAttempts": "Too many attempts. Please try again in a few minutes."
     },
     "nav": {
+      "dashboard": "Dashboard",
       "requests": "Pending Requests",
       "appointments": "Appointments",
+      "calendar": "Calendar",
+      "archive": "Archive",
       "departments": "Departments",
       "doctors": "Doctors"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "An overview of booking activity at {hospital}",
+      "statPending": "Pending Requests",
+      "statToday": "Today's Appointments",
+      "statWeek": "This Week's Appointments",
+      "statConfirmedTotal": "Total Confirmed",
+      "statRejectedCancelled": "Rejected & Cancelled",
+      "viewAll": "View all",
+      "byDepartment": "Bookings by Department",
+      "byDepartmentEmpty": "Not enough data yet.",
+      "trendTitle": "New Bookings — Last 14 Days",
+      "pendingPreviewTitle": "Latest Pending Requests",
+      "pendingPreviewEmpty": "No pending requests right now.",
+      "search": {
+        "title": "Find an Appointment",
+        "subtitle": "Search by appointment reference number or patient phone number.",
+        "placeholder": "e.g. A1B2C3D4 or 0501234567",
+        "button": "Search",
+        "resultsCount": "{count} results",
+        "noResults": "No appointments match this search.",
+        "reference": "Reference"
+      }
+    },
+    "calendar": {
+      "title": "Appointments Calendar",
+      "selectDay": "Select a day on the calendar to see its appointments."
+    },
+    "archive": {
+      "title": "Appointments Archive",
+      "subtitle": "{count} appointments match the current search.",
+      "exportExcel": "Export to Excel",
+      "filterByStatus": "Filter by status",
+      "allStatuses": "All statuses",
+      "from": "From",
+      "to": "To",
+      "searchLabel": "Search",
+      "searchPlaceholder": "Name, phone, email, or reference",
+      "empty": "No matching appointments."
     },
     "requests": {
       "title": "Pending Requests",
@@ -139,6 +182,13 @@
       "updateSuccess": "Doctor updated.",
       "deleteSuccess": "Doctor deleted.",
       "deleteConfirm": "Delete this doctor and all their schedule data?",
+      "portalAccess": "Doctor Portal Access",
+      "portalAccessHint": "Set an email and password so this doctor can log in and manage their appointments. Leave both blank to disable portal access.",
+      "portalEmail": "Doctor's email",
+      "portalPassword": "Password",
+      "portalPasswordEdit": "New password (leave blank to keep current)",
+      "emailTaken": "This email is already used by another doctor.",
+      "portalCredentialsIncomplete": "Email and password must both be set to enable portal access.",
       "availability": "Weekly Availability",
       "addAvailability": "Add time window",
       "dayOfWeek": "Day",
@@ -158,6 +208,21 @@
         "5": "Friday",
         "6": "Saturday"
       }
+    }
+  },
+  "doctor": {
+    "login": {
+      "title": "Doctor sign-in",
+      "subtitle": "Enter your email and password to continue.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "invalidCredentials": "Incorrect email or password.",
+      "tooManyAttempts": "Too many attempts. Please try again in a few minutes."
+    },
+    "dashboard": {
+      "title": "My Appointments",
+      "greeting": "Welcome"
     }
   },
   "status": {

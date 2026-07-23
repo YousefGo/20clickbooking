@@ -23,6 +23,15 @@ export async function getDoctorById(id: string) {
   return rows[0] ?? null;
 }
 
+export async function getDoctorByEmail(email: string) {
+  const rows = await db
+    .select()
+    .from(doctors)
+    .where(eq(doctors.email, email.trim().toLowerCase()))
+    .limit(1);
+  return rows[0] ?? null;
+}
+
 export function getDoctorAvailability(doctorId: string) {
   return db
     .select()

@@ -30,7 +30,24 @@ export default async function EditDoctorPage({
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="mb-6 font-heading text-2xl font-black text-navy">{dict.admin.doctors.edit}</h1>
-        <DoctorForm locale={locale as Locale} dict={dict} departments={departments} initial={doctor} />
+        <DoctorForm
+          locale={locale as Locale}
+          dict={dict}
+          departments={departments}
+          initial={{
+            id: doctor.id,
+            departmentId: doctor.departmentId,
+            nameEn: doctor.nameEn,
+            nameAr: doctor.nameAr,
+            titleEn: doctor.titleEn,
+            titleAr: doctor.titleAr,
+            bioEn: doctor.bioEn,
+            bioAr: doctor.bioAr,
+            slotDurationMinutes: doctor.slotDurationMinutes,
+            isActive: doctor.isActive,
+            email: doctor.email,
+          }}
+        />
       </div>
 
       <Separator />

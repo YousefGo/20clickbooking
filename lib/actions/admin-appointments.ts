@@ -45,6 +45,7 @@ export async function confirmAppointment(id: string): Promise<ConfirmResult> {
   }
 
   revalidatePath("/[locale]/admin", "page");
+  revalidatePath("/[locale]/admin/requests", "page");
   revalidatePath("/[locale]/admin/appointments", "page");
 
   if (!updated.patientEmail) {
@@ -130,6 +131,7 @@ export async function rejectAppointment(
   }
 
   revalidatePath("/[locale]/admin", "page");
+  revalidatePath("/[locale]/admin/requests", "page");
 
   if (!options.notifyPatient || !updated.patientEmail) {
     return { ok: true, emailSent: false };
@@ -168,5 +170,6 @@ export async function cancelAppointment(id: string): Promise<void> {
     .update(appointments)
     .set({ status: "cancelled", updatedAt: new Date() })
     .where(eq(appointments.id, id));
+  revalidatePath("/[locale]/admin", "page");
   revalidatePath("/[locale]/admin/appointments", "page");
 }
